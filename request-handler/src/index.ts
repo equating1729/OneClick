@@ -26,6 +26,15 @@ function getContentType(path: string) {
   return "text/plain";
 }
 
+// 🔥 NEW: Smart Cache Function
+function setCacheHeaders(res: any, path: string) {
+  if (path.endsWith(".html")) {
+    res.setHeader("Cache-Control", "no-cache");
+  } else {
+    res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+  }
+}
+
 app.use(async (req, res) => {
   try {
     const id = req.hostname.split(".")[0];
@@ -33,7 +42,7 @@ app.use(async (req, res) => {
     let filePath = req.path;
     if (filePath === "/") filePath = "/index.html";
 
-    const key = `dist/${id}${filePath}`; // 🔥 FIXED
+    const key = `dist/${id}${filePath}`;
     console.log("S3 Key:", key);
 
     const content = await s3.send(
@@ -48,6 +57,7 @@ app.use(async (req, res) => {
     }
 
     res.setHeader("Content-Type", getContentType(filePath));
+    setCacheHeaders(res, filePath); // 🔥 ADDED
 
     (content.Body as Readable).pipe(res);
 
@@ -65,6 +75,8 @@ app.use(async (req, res) => {
       );
 
       res.setHeader("Content-Type", "text/html");
+      res.setHeader("Cache-Control", "no-cache"); // 🔥 ADDED
+
       (fallback.Body as Readable).pipe(res);
 
     } catch {
