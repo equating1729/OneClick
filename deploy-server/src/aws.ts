@@ -12,7 +12,7 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config();
+dotenv.config({ path: "../.env" });
 const s3 = new S3Client({
   region: "auto",
   endpoint: process.env.AWS_S3_ENDPOINT!,

@@ -8,13 +8,13 @@ export function buildProject(id: string) {
     const child = exec(
       `cd ${path.join(__dirname, `cloned-repo/${id}`)} && npm install && npm run build`,
     );
-    child.stdout?.on("data", (data) => {
+    child.stdout?.on("data", (data: Buffer) => {
       console.log("stdout:", data);
     });
-    child.stderr?.on("data", (data) => {
+    child.stderr?.on("data", (data: Buffer) => {
       console.log("stderr:", data);
     });
-    child.on("close", (code) => {
+    child.on("close", (code: number) => {
       resolve("");
     });
   });
