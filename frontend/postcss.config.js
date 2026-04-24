@@ -1,8 +1,7 @@
 export default {
-    plugins: {
-      "postcss-nesting": {},
-      tailwindcss: {},
-      autoprefixer: {},
-    },
-  }
-  
+  plugins: {
+    "postcss-nesting": {},
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}

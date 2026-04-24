@@ -1,9 +1,9 @@
-import express, { type Request, type Response } from "express";
+import express from "express";
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import dotenv from "dotenv";
 import { Readable } from "stream";
 
-dotenv.config({ path: "../.env" });
+dotenv.config();
 
 const s3 = new S3Client({
   region: "auto",
@@ -26,7 +26,7 @@ function getContentType(path: string) {
   return "text/plain";
 }
 
-app.use(async (req: Request, res: Response) => {
+app.use(async (req, res) => {
   try {
     const id = req.hostname.split(".")[0];
 
@@ -40,7 +40,7 @@ app.use(async (req: Request, res: Response) => {
       new GetObjectCommand({
         Bucket: "vercel-bucket",
         Key: key,
-      }),
+      })
     );
 
     if (!content.Body) {
@@ -50,6 +50,7 @@ app.use(async (req: Request, res: Response) => {
     res.setHeader("Content-Type", getContentType(filePath));
 
     (content.Body as Readable).pipe(res);
+
   } catch (err) {
     console.log("Fallback to index.html");
 
@@ -60,11 +61,12 @@ app.use(async (req: Request, res: Response) => {
         new GetObjectCommand({
           Bucket: "vercel-bucket",
           Key: `dist/${id}/index.html`,
-        }),
+        })
       );
 
       res.setHeader("Content-Type", "text/html");
       (fallback.Body as Readable).pipe(res);
+
     } catch {
       res.status(404).send("Not Found");
     }
